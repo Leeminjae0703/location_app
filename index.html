@@ -1,1 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>현재 위치 가져오기</title>
+</head>
+<body>
+  <h1>📍 현재 위치 가져오기</h1>
+  <p id="status">위치를 가져오는 중...</p>
 
+  <script>
+    function saveLocationToFile(latitude, longitude) {
+      const data = `${latitude},${longitude}`;
+      const blob = new Blob([data], { type: "text/plain" });
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "location.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function success(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      document.getElementById("status").textContent = `✅ 위도: ${lat}, 경도: ${lon}`;
+      saveLocationToFile(lat, lon);
+    }
+
+    function error(err) {
+      document.getElementById("status").textContent = `❌ 오류 발생: ${err.message}`;
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      });
+    } else {
+      document.getElementById("status").textContent = "❌ 이 브라우저는 위치 정보를 지원하지 않습니다.";
+    }
+  </script>
+</body>
+</html>
